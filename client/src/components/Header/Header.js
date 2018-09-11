@@ -1,9 +1,9 @@
 import React from "react";
 
-const Header = ({ children }) => (
+const Header = () => (
   <header>
-    {children}
-    <h1>This is the Title</h1>
+  <h1>New York Times Article Scrubber</h1>
+  <h2>Search for and annotate articles of interest!</h2>
   </header>
 );
 

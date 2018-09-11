@@ -2,8 +2,7 @@ import React from "react";
 
 const Subheader = ({ children }) => (
   <div
-    className="subheader"
-  >
+    className="subheader">
     {children}
   </div>
 );
