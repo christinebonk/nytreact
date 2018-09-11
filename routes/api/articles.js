@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const nytController = require("../../controllers/nytControllers.js");
+const articleController = require("../../controllers/articleControllers.js");
 const axios = require("axios");
 
 router.get("/articles", (req, res) => {
@@ -11,14 +11,14 @@ router.get("/articles", (req, res) => {
 
 // Matches with "/api/books"
 router.route("/")
-  .get(nytController.findAll)
-  .post(nytController.create);
+  .get(articleController.findAll)
+  .post(articleController.create);
 
 // Matches with "/api/books/:id"
 router
   .route("/:id")
-  .get(nytController.findById)
-  .put(nytController.update)
-  .delete(nytController.remove);
+  .get(articleController.findById)
+  .put(articleController.update)
+  .delete(articleController.remove);
 
 module.exports = router;

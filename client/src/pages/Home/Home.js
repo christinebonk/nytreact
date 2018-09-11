@@ -30,8 +30,10 @@ class Home extends Component {
     .catch(err => console.log(err));
   }
 
-  saveArticle = id => {
-    API.saveArticle(id)
+  saveArticle = title => {
+    API.saveArticle({
+      title: title
+    })
       .then(res => this.loadArticles())
       .catch(err => console.log(err))
   };
@@ -53,10 +55,22 @@ class Home extends Component {
     event.preventDefault();
     if (this.state.topic && this.state.startDate && this.state.endDate) {
       var query = `https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=d580d6be589b4e8499f01d5f0a3ba19d&q=${this.state.topic}&begin_date=${this.state.startDate}0101&end_date=${this.state.endDate}0101`
+      console.log(query);
       API.searchArticles(query)
         .then(res => 
         {
-          this.setState({articles: res.data.response.docs})
+          const data = res.data.response.docs;
+          var articles = data.map(article => {
+            var newObj = {
+              headline: article.headline.main,
+              date: article.pub_date,
+              url: article.web_url
+            }
+            return newObj;
+          })
+          this.setState({articles: articles});
+          console.log(this.state.articles)
+
         })
         .catch(err => console.log(err));
     }
@@ -114,13 +128,15 @@ class Home extends Component {
               <h3>Search Result</h3>
             </Subheader>
             {this.state.articles.length ? (
-              <List>
-                {this.state.articles.map(article => (
-                    <ListItem> 
-                      {article.headline.main} 
-                    </ListItem>
-                    ))}
-              </List>
+              <div>
+              <ul className="collection">
+                   {this.state.articles.map(article => (
+                  <a href={article.url} className="collection-item">
+                  {article.headline}
+                  </a>
+                ))}
+              </ul>
+              </div>
                 ) : (
                   <h3>No Results to Display</h3>
                 )}
@@ -131,5 +147,12 @@ class Home extends Component {
   }
 
 }
+
+
+
+         
+                  
+
+
 
 export default Home;
