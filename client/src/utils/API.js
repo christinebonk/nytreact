@@ -5,8 +5,16 @@ export default {
     return axios.get(query);
   },
 
-  saveArticles: function(articles) {
+  saveArticle: function(articles) {
     return axios.post("/api/articles", articles);
+  },
+
+  getArticles: function(articles) {
+    return axios.get("/api/articles");
+  },
+
+  deleteArticle: function(id) {
+    return axios.delete("/api/articles/" + id);
   }
 };
 

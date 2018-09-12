@@ -1,13 +1,11 @@
 import React, { Component } from "react";
 import Subheader from "../../components/Subheader"
 import { Input, SubmitBtn } from "../../components/SearchForm";
-import Saved from "../../components/Saved";
-import SaveBtn from "../../components/Saved";
+import SaveBtn from "../../components/SaveBtn";
 import Header from "../../components/Header";
 import API from "../../utils/API";
-import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
-import { List, ListItem } from "../../components/List";
+
 
 class Home extends Component {
   state = {
@@ -19,27 +17,32 @@ class Home extends Component {
   };
 
   componentDidMount() {
-    // this.loadArticles();
+    this.loadArticles();
   }
 
   loadArticles = () => {
     API.getArticles()
     .then(res =>
-      this.setState({ articles: res.data, title: "", date: "", url: ""})
+      this.setState({ saved: res.data})
       )
     .catch(err => console.log(err));
   }
 
-  saveArticle = title => {
+  saveArticle = url => {
+    let result = this.state.articles.filter(obj => {
+      return obj.url === url
+   });
     API.saveArticle({
-      title: title
+      title: result[0].headline,
+      url: result[0].url,
+      date: result[0].date
     })
-      .then(res => this.loadArticles())
+      .then(this.loadArticles())
       .catch(err => console.log(err))
   };
 
   deleteArticle = id => {
-    API.deleteBook(id)
+    API.deleteArticle(id)
       .then(res => this.loadArticles())
       .catch(err => console.log(err));
   };
@@ -61,9 +64,11 @@ class Home extends Component {
         {
           const data = res.data.response.docs;
           var articles = data.map(article => {
+            var date = article.pub_date;
+            date = date.substring(0,10);
             var newObj = {
               headline: article.headline.main,
-              date: article.pub_date,
+              date: date,
               url: article.web_url
             }
             return newObj;
@@ -119,7 +124,7 @@ class Home extends Component {
                 disabled={!(this.state.topic && this.state.startDate && this.state.endDate)}
                 onClick={this.handleFormSubmit}
               >
-                Search Atricle
+                Search Articles
               </SubmitBtn>
             </form>
           </Col>
@@ -131,14 +136,40 @@ class Home extends Component {
               <div>
               <ul className="collection">
                    {this.state.articles.map(article => (
-                  <a href={article.url} className="collection-item">
-                  {article.headline}
+                  <li key={article.url} className="collection-item">
+                  <a href={article.url} >
+                    {article.headline}
                   </a>
+                  <p>{article.date}</p>
+                  <SaveBtn title="Save" onClick={() => this.saveArticle(article.url)} />
+                  </li>
                 ))}
               </ul>
               </div>
                 ) : (
                   <h3>No Results to Display</h3>
+                )}
+          </Col>
+          <Col size="m6 s12">
+            <Subheader>
+              <h3>Saved Articles</h3>
+            </Subheader>
+            {this.state.saved.length ? (
+              <div>
+              <ul className="collection">
+                   {this.state.saved.map(article => (
+                  <li key={article.url} className="collection-item">
+                  <a href={article.url} >
+                    {article.title}
+                  </a>
+                  <p>{article.date}</p>
+                  <SaveBtn title="Delete" onClick={() => this.deleteArticle(article._id)} />
+                  </li>
+                ))}
+              </ul>
+              </div>
+                ) : (
+                  <h3>No Saved Articles</h3>
                 )}
           </Col>
         </Row>
